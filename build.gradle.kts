@@ -50,7 +50,7 @@ version = "0.0.0-SNAPSHOT"
 gitVersioning.apply {
     refs {
         branch(".+") { version = "\${ref}-SNAPSHOT" }
-        tag("v(?<version>.*)") { version = "\${ref.version}" }
+        tag("(?<version>.*)") { version = "\${ref.version}" }
     }
 }
 
