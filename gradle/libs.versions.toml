@@ -1,6 +1,6 @@
 [versions]
 ktor = "3.0.0"
-kotlin = "2.1.10"
+kotlin = "2.1.20"
 
 [libraries]
 clikt = { module = "com.github.ajalt.clikt:clikt", version = "3.5.4" }
