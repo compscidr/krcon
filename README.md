@@ -10,7 +10,8 @@ Supports:
 ## Usage
 Add the dependency to your project:
 ```kotlin
-implementation("com.jasonernst.krcon:krcon:0.0.1")
+implementation("com.jasonernst.krcon:krcon:0.0.3")
+
 ```
 ```kotlin
 fun someCallback(message: WebRConPacket) {
