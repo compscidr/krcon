@@ -8,12 +8,10 @@ jetbrains-kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-client-websockets = { module = "io.ktor:ktor-client-websockets", version.ref = "ktor" }
-ktor-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
-ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 slf4j-simple = { module = "org.slf4j:slf4j-simple", version = "2.0.16" }
 
 [bundles]
-ktor = ["ktor-client-core", "ktor-client-cio", "ktor-client-websockets", "ktor-content-negotiation", "ktor-serialization-kotlinx-json"]
+ktor = ["ktor-client-core", "ktor-client-cio", "ktor-client-websockets"]
 
 [plugins]
 git-version = { id = "me.qoomon.git-versioning", version = "6.4.4" }
