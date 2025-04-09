@@ -1,0 +1,24 @@
+[versions]
+ktor = "3.0.0"
+kotlin = "2.1.10"
+
+[libraries]
+clikt = { module = "com.github.ajalt.clikt:clikt", version = "3.5.0" }
+jetbrains-kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.8.1" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
+ktor-client-websockets = { module = "io.ktor:ktor-client-websockets", version.ref = "ktor" }
+ktor-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+slf4j-simple = { module = "org.slf4j:slf4j-simple", version = "2.0.16" }
+
+[bundles]
+ktor = ["ktor-client-core", "ktor-client-cio", "ktor-client-websockets", "ktor-content-negotiation", "ktor-serialization-kotlinx-json"]
+
+[plugins]
+git-version = { id = "me.qoomon.git-versioning", version = "6.4.4" }
+gradleup-nmcp = { id = "com.gradleup.nmcp", version = "0.0.9"}
+jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlinter = { id = "org.jmailen.kotlinter", version = "5.0.1" }
+sonatype-maven-central = { id = "com.vanniktech.maven.publish", version = "0.30.0" }
