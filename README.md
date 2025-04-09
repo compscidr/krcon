@@ -37,4 +37,6 @@ You can also just pass runtime arguments to the main function:
 ./gradlew run --args="--host localhost --port 28017 --password somepass"
 ```
 
+## Demo
+![Alt Text](demo.gif)
 
