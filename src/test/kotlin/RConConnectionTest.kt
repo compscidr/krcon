@@ -38,6 +38,7 @@ class RConConnectionTest {
             println("Received packet: $rconpacket")
             packetReceived = true
         }
+        connection.waitUntilConnected()
         connection.send("playerlist")
         Thread.sleep(1000)
         assertTrue(packetReceived)

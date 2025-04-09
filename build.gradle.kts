@@ -30,6 +30,22 @@ tasks.named<JavaExec>("run") {
     jvmArgs("-Dorg.gradle.console=plain")
 }
 
+tasks.jacocoTestReport {
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+tasks.withType<Test>().configureEach {
+    // useJUnitPlatform()
+    finalizedBy("jacocoTestReport")
+}
+
+jacoco {
+    toolVersion = "0.8.12"
+}
+
 version = "0.0.0-SNAPSHOT"
 gitVersioning.apply {
     refs {
