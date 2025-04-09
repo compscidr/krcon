@@ -49,7 +49,12 @@ class KRCon : CliktCommand() {
     }
 
     override fun run() {
-        println("Connecting to $host:$port with password '$password'")
+        val censoredPassword = if (password.isNotEmpty()) {
+            password.replace(Regex("(?<=.{0})."), "*")
+        } else {
+            ""
+        }
+        println("Connecting to $host:$port with password '$censoredPassword'")
         val connection = RConConnection(host, port.toInt(), password)
         connection.start(::recvMessage)
         if (connection.waitUntilConnected()) {
