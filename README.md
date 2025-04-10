@@ -10,7 +10,7 @@ Supports:
 ## Usage
 Add the dependency to your project:
 ```kotlin
-implementation("com.jasonernst.krcon:krcon:0.0.5")
+implementation("com.jasonernst.krcon:krcon:0.0.6")
 
 ```
 ```kotlin
