@@ -52,7 +52,8 @@ class RConConnection(
     }
 
     @OptIn(ExperimentalSerializationApi::class)
-    fun start(callback: (message: WebRConPacket) -> Unit = {}) {
+    fun start(callback: (message: WebRConPacket, connection: RConConnection) -> Unit = { _, _ -> }) {
+        val myConnection = this
         job =
             CoroutineScope(Dispatchers.IO).launch {
                 client
@@ -68,7 +69,7 @@ class RConConnection(
                                         val json = Json { decodeEnumsCaseInsensitive = true }
                                         val rconPacket = json.decodeFromString<WebRConPacket>(text)
                                         logger.debug("Received: {}", rconPacket)
-                                        callback(rconPacket)
+                                        callback(rconPacket, myConnection)
                                     } catch (e: Exception) {
                                         logger.error("Received non-JSON message: $text EX: (${e.message})")
                                     }

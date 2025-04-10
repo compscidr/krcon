@@ -34,7 +34,7 @@ class RConConnectionTest {
             )
 
         var packetReceived = false
-        connection.start { rconpacket ->
+        connection.start { rconpacket, _ ->
             println("Received packet: $rconpacket")
             packetReceived = true
         }

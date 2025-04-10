@@ -44,8 +44,11 @@ class KRCon : CliktCommand() {
         help = "Password to connect with (default is '${localProperties["password"]?.toString() ?: ""}')",
     ).default(localProperties["password"]?.toString() ?: "")
 
-    private fun recvMessage(webRConPacket: WebRConPacket) {
-        println(webRConPacket)
+    private fun recvMessage(
+        webRConPacket: WebRConPacket,
+        connection: RConConnection,
+    ) {
+        println("Got: " + webRConPacket + " from " + connection.host + ":" + connection.port)
     }
 
     override fun run() {

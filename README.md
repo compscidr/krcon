@@ -14,8 +14,8 @@ implementation("com.jasonernst.krcon:krcon:0.0.5")
 
 ```
 ```kotlin
-fun someCallback(message: WebRConPacket) {
-    println("Got message: $message")
+fun someCallback(message: WebRConPacket, connection: RConConnection) {
+    println("Got message: $message from $connection")
 }
 
 val connection = RConConnection("localhost", 28017, "somepass")
