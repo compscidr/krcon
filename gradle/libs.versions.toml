@@ -18,5 +18,5 @@ git-version = { id = "me.qoomon.git-versioning", version = "6.4.4" }
 gradleup-nmcp = { id = "com.gradleup.nmcp", version = "0.1.4"}
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-kotlinter = { id = "org.jmailen.kotlinter", version = "5.0.2" }
+kotlinter = { id = "org.jmailen.kotlinter", version = "5.1.0" }
 sonatype-maven-central = { id = "com.vanniktech.maven.publish", version = "0.32.0" }
