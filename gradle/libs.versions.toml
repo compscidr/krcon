@@ -15,7 +15,7 @@ ktor = ["ktor-client-core", "ktor-client-cio", "ktor-client-websockets"]
 
 [plugins]
 git-version = { id = "me.qoomon.git-versioning", version = "6.4.4" }
-gradleup-nmcp = { id = "com.gradleup.nmcp", version = "0.1.5"}
+gradleup-nmcp = { id = "com.gradleup.nmcp", version = "1.0.2"}
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlinter = { id = "org.jmailen.kotlinter", version = "5.1.1" }
