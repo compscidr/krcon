@@ -1,5 +1,6 @@
 import com.jasonernst.krcon.RConConnection
 import org.junit.Assert.assertTrue
+import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Test
 import org.slf4j.LoggerFactory
@@ -24,6 +25,10 @@ class RConConnectionTest {
         }
     }
 
+    /**
+     * Integration test that requires a real RCON server.
+     * Skipped automatically when the server is unavailable.
+     */
     @Test
     fun testWebRcon() {
         val connection =
@@ -38,7 +43,14 @@ class RConConnectionTest {
             println("Received packet: $rconpacket")
             packetReceived = true
         }
-        connection.waitUntilConnected()
+
+        // Skip test if server is unavailable (integration test)
+        val connected = connection.waitUntilConnected()
+        if (!connected) {
+            connection.stop()
+            assumeTrue("RCON server not available - skipping integration test", false)
+        }
+
         connection.send("playerlist")
         Thread.sleep(1000)
         assertTrue(packetReceived)
