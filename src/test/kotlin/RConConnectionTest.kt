@@ -1,4 +1,5 @@
 import com.jasonernst.krcon.RConConnection
+import org.junit.Assume.assumeTrue
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -24,13 +25,29 @@ class RConConnectionTest {
         }
     }
 
+    /**
+     * Integration test that requires a real RCON server.
+     * Skipped automatically when no server is configured via local.properties.
+     * To run: create local.properties with host, port, and password set to a real server.
+     */
     @Test
     fun testWebRcon() {
+        // Skip this test if no real RCON server is configured
+        // This prevents CI failures when secrets aren't set
+        val host = localProperties["host"]?.toString()
+        val port = localProperties["port"]?.toString()
+        val password = localProperties["password"]?.toString()
+
+        assumeTrue(
+            "Skipping: no RCON server configured (set host/port/password in local.properties)",
+            !host.isNullOrBlank() && !port.isNullOrBlank() && !password.isNullOrBlank()
+        )
+
         val connection =
             RConConnection(
-                localProperties["host"]?.toString() ?: "localhost",
-                localProperties["port"]?.toString()?.toInt() ?: 28017,
-                localProperties["password"]?.toString() ?: "",
+                host!!,
+                port!!.toInt(),
+                password!!,
             )
 
         var packetReceived = false
