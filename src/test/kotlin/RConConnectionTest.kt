@@ -1,6 +1,7 @@
 import com.jasonernst.krcon.RConConnection
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -24,6 +25,14 @@ class RConConnectionTest {
         }
     }
 
+    /**
+     * Integration test that requires a real RCON server (e.g., Rust game server) to be running.
+     * Ignored in CI - run manually with local.properties configured:
+     *   host=<server-ip>
+     *   port=<rcon-port>
+     *   password=<rcon-password>
+     */
+    @Ignore("Requires external RCON server - run manually for integration testing")
     @Test
     fun testWebRcon() {
         val connection =
