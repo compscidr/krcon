@@ -46,10 +46,7 @@ class RConConnectionTest {
 
         // Skip test if server is unavailable (integration test)
         val connected = connection.waitUntilConnected()
-        if (!connected) {
-            connection.stop()
-            assumeTrue("RCON server not available - skipping integration test", false)
-        }
+        assumeTrue("RCON server not available - skipping integration test", connected)
 
         connection.send("playerlist")
         Thread.sleep(1000)
