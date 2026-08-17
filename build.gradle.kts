@@ -66,6 +66,9 @@ nmcpAggregation {
         // or if you want to publish automatically
         publishingType = "AUTOMATIC"
     }
+    // nmcp 1.x no longer picks up publications automatically; wire in every
+    // project that applies maven-publish (just the root project here)
+    publishAllProjectsProbablyBreakingProjectIsolation()
 }
 
 // see: https://vanniktech.github.io/gradle-maven-publish-plugin/central/#configuring-the-pom
