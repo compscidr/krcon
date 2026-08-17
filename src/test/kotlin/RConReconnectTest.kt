@@ -123,6 +123,29 @@ class RConReconnectTest {
         assertTrue("should connect once the server is up", waitFor { conn.isConnected() })
     }
 
+    /** A throwing user callback must not tear down the websocket session. */
+    @Test
+    fun callbackExceptionDoesNotDropConnection() {
+        val serverConnections = AtomicInteger(0)
+        val port =
+            startServer {
+                serverConnections.incrementAndGet()
+                send(Frame.Text("""{"Identifier": 1, "Message": "boom", "Type": "Generic"}"""))
+                send(Frame.Text("""{"Identifier": 2, "Message": "ok", "Type": "Generic"}"""))
+                delay(30_000)
+            }
+        val conn = RConConnection("localhost", port, "pw")
+        connection = conn
+        val received = mutableListOf<String>()
+        conn.start { packet, _ ->
+            check(packet.message != "boom") { "handler bug" }
+            synchronized(received) { received.add(packet.message) }
+        }
+        assertTrue(conn.waitUntilConnected(10_000))
+        assertTrue("second message still delivered", waitFor { synchronized(received) { "ok" in received } })
+        assertEquals("no reconnect happened", 1, serverConnections.get())
+    }
+
     /** Issue #112: stop() stays terminal — no reconnect after an explicit stop. */
     @Test
     fun stopPreventsReconnect() {

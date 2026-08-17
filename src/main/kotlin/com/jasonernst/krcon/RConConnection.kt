@@ -37,6 +37,7 @@ class RConConnection(
     private var outgoingChannel: SendChannel<Frame>? = null
     private var job: Job? = null
     private val state = MutableStateFlow(RconConnectionState.CONNECTING)
+    private val json = Json { decodeEnumsCaseInsensitive = true }
 
     fun send(message: String) {
         val channel = outgoingChannel
@@ -45,9 +46,14 @@ class RConConnection(
             return
         }
         val rconPacket = WebRConPacket(identifier++, message, "krcon")
-        val json = Json.encodeToString(rconPacket)
+        val payload = Json.encodeToString(rconPacket)
         CoroutineScope(Dispatchers.IO).launch {
-            channel.send(Frame.Text(json))
+            try {
+                channel.send(Frame.Text(payload))
+            } catch (e: Exception) {
+                // the connection can drop between the state check and the send
+                logger.error("Failed to send message: ${e.message}")
+            }
         }
     }
 
@@ -69,13 +75,20 @@ class RConConnection(
                                 incoming.consumeEach { frame ->
                                     if (frame is Frame.Text) {
                                         val text = frame.readText()
-                                        try {
-                                            val json = Json { decodeEnumsCaseInsensitive = true }
-                                            val rconPacket = json.decodeFromString<WebRConPacket>(text)
+                                        val rconPacket =
+                                            try {
+                                                json.decodeFromString<WebRConPacket>(text)
+                                            } catch (e: Exception) {
+                                                logger.error("Received non-JSON message: $text EX: (${e.message})")
+                                                null
+                                            }
+                                        if (rconPacket != null) {
                                             logger.debug("Received: {}", rconPacket)
-                                            callback(rconPacket, myConnection)
-                                        } catch (e: Exception) {
-                                            logger.error("Received non-JSON message: $text EX: (${e.message})")
+                                            try {
+                                                callback(rconPacket, myConnection)
+                                            } catch (e: Exception) {
+                                                logger.error("Message callback threw for $rconPacket", e)
+                                            }
                                         }
                                     } else {
                                         logger.error("Received non-text frame: $frame")
@@ -84,7 +97,7 @@ class RConConnection(
                             }
                         }.onFailure {
                             if (it is CancellationException) throw it
-                            logger.error("Failed to connect to $host:$port: ${it.message}")
+                            logger.error("Connection to $host:$port failed: ${it.message}", it)
                         }.onSuccess {
                             logger.info("Connection closed")
                         }
@@ -113,6 +126,7 @@ class RConConnection(
     fun stop() {
         job?.cancel()
         client.close()
+        outgoingChannel = null
         state.value = RconConnectionState.DISCONNECTED
     }
 
