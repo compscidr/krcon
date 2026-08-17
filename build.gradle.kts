@@ -18,6 +18,8 @@ dependencies {
     api(libs.clikt)
     api(libs.slf4j.simple)
     testImplementation(kotlin("test"))
+    testImplementation(libs.ktor.server.cio)
+    testImplementation(libs.ktor.server.websockets)
 }
 
 application {
