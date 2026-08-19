@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import org.slf4j.LoggerFactory
+import java.util.concurrent.atomic.AtomicInteger
 
 class RConConnection(
     val host: String,
@@ -27,7 +28,11 @@ class RConConnection(
     val password: String,
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
-    private var identifier = 0 // this should increase for every message sent
+
+    // Starts at 1, never 0: the server broadcasts unsolicited console output with Identifier 0,
+    // so a command stamped 0 would have a reply indistinguishable from broadcast traffic.
+    // Atomic because send() may be called from any thread.
+    private val identifier = AtomicInteger(1)
     private val client =
         HttpClient(CIO) {
             install(WebSockets) {
@@ -39,13 +44,21 @@ class RConConnection(
     private val state = MutableStateFlow(RconConnectionState.CONNECTING)
     private val json = Json { decodeEnumsCaseInsensitive = true }
 
-    fun send(message: String) {
+    /**
+     * Sends [message] and returns the identifier stamped on the outgoing packet. The server
+     * echoes that identifier on the command's reply, so this is what lets a caller match a reply
+     * to its own request instead of adopting whatever arrives next. Returns null when the
+     * connection is not connected — nothing was sent. A non-null return means "queued", not
+     * "delivered": the connection can still drop before the frame goes out.
+     */
+    fun send(message: String): Int? {
         val channel = outgoingChannel
         if (state.value != RconConnectionState.CONNECTED || channel == null) {
             logger.error("Cannot send message, connection is not connected")
-            return
+            return null
         }
-        val rconPacket = WebRConPacket(identifier++, message, "krcon")
+        val id = identifier.getAndIncrement()
+        val rconPacket = WebRConPacket(id, message, "krcon")
         val payload = Json.encodeToString(rconPacket)
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -55,6 +68,7 @@ class RConConnection(
                 logger.error("Failed to send message: ${e.message}")
             }
         }
+        return id
     }
 
     @OptIn(ExperimentalSerializationApi::class)
