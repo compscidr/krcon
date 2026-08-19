@@ -46,7 +46,7 @@ class RConSendIdentifierTest {
                             if (frame is Frame.Text) {
                                 val request = json.decodeFromString<WebRConPacket>(frame.readText())
                                 val reply = WebRConPacket(request.identifier, "echo: ${request.message}", "test")
-                                send(Frame.Text(Json.encodeToString(reply)))
+                                send(Frame.Text(json.encodeToString(reply)))
                             }
                         }
                     }
