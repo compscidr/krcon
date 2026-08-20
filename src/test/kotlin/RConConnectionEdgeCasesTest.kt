@@ -89,8 +89,10 @@ class RConConnectionEdgeCasesTest {
 
     @Test
     fun waitForCloseReturnsAfterStop() {
-        // no job yet: returns immediately
+        // no job yet: must return immediately, not sit out the timeout
+        var start = System.currentTimeMillis()
         RConConnection("localhost", 1, "pw").waitForClose(1_000)
+        assertTrue("waitForClose without start() must return immediately", System.currentTimeMillis() - start < 900)
 
         val port = startServer { delay(30_000) }
         val conn = RConConnection("localhost", port, "pw")
@@ -98,7 +100,9 @@ class RConConnectionEdgeCasesTest {
         conn.start()
         assertTrue(conn.waitUntilConnected(15_000))
         conn.stop()
+        start = System.currentTimeMillis()
         conn.waitForClose(10_000)
+        assertTrue("waitForClose after stop() must not run out the timeout", System.currentTimeMillis() - start < 5_000)
         assertTrue(conn.isDisconnected())
     }
 }
