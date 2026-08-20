@@ -111,7 +111,16 @@ class RConConnection(
                             }
                         }.onFailure {
                             if (it is CancellationException) throw it
-                            logger.error("Connection to $host:$port failed: ${it.message}", it)
+                            if (isRefusedDial(it)) {
+                                // A down or unreachable server is a NORMAL state for a long-lived
+                                // connection to sit in — the loop below retries with backoff by
+                                // design (#112). WARN without a stack: the message says everything
+                                // a refused dial has to say, and an ERROR per retry buries real
+                                // errors in consumers' logs.
+                                logger.warn("Connection to $host:$port failed: ${it.message}")
+                            } else {
+                                logger.error("Connection to $host:$port failed: ${it.message}", it)
+                            }
                         }.onSuccess {
                             logger.info("Connection closed")
                         }
@@ -154,6 +163,10 @@ class RConConnection(
     companion object {
         private const val INITIAL_BACKOFF_MILLIS = 2_000L
         private const val MAX_BACKOFF_MILLIS = 30_000L
+
+        /** Whether [t] is a dial the peer refused, wherever ktor buried the ConnectException
+         *  in the cause chain — CIO throws it raw, but engines and plugins wrap. */
+        private fun isRefusedDial(t: Throwable): Boolean = generateSequence(t) { it.cause }.any { it is java.net.ConnectException }
     }
 }
 
