@@ -1,4 +1,6 @@
 # krcon
+[![codecov](https://codecov.io/gh/compscidr/krcon/graph/badge.svg)](https://codecov.io/gh/compscidr/krcon)
+
 Kotlin Remote Console library using websockets
 
 ## Features
