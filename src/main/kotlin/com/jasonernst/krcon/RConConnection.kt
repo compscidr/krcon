@@ -22,10 +22,17 @@ import kotlinx.serialization.json.Json
 import org.slf4j.LoggerFactory
 import java.util.concurrent.atomic.AtomicInteger
 
+/**
+ * @param client what the connection dials through. Defaults to one client shared by every
+ *  connection in the process: each Ktor CIO client pins an IO thread to its selector loop, so a
+ *  client per connection cost a thread per connection (#142). [stop] never closes it — a caller
+ *  that passes its own client owns its lifecycle.
+ */
 class RConConnection(
     val host: String,
     val port: Int,
     val password: String,
+    private val client: HttpClient = sharedClient,
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -33,12 +40,6 @@ class RConConnection(
     // so a command stamped 0 would have a reply indistinguishable from broadcast traffic.
     // Atomic because send() may be called from any thread.
     private val identifier = AtomicInteger(1)
-    private val client =
-        HttpClient(CIO) {
-            install(WebSockets) {
-                // pingIntervalMillis = 20_000
-            }
-        }
     private var outgoingChannel: SendChannel<Frame>? = null
     private var job: Job? = null
     private val state = MutableStateFlow(RconConnectionState.CONNECTING)
@@ -148,7 +149,6 @@ class RConConnection(
 
     fun stop() {
         job?.cancel()
-        client.close()
         outgoingChannel = null
         state.value = RconConnectionState.DISCONNECTED
     }
@@ -161,6 +161,8 @@ class RConConnection(
     }
 
     companion object {
+        private val sharedClient: HttpClient by lazy { HttpClient(CIO) { install(WebSockets) } }
+
         private const val INITIAL_BACKOFF_MILLIS = 2_000L
         private const val MAX_BACKOFF_MILLIS = 30_000L
 
