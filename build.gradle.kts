@@ -26,6 +26,20 @@ application {
     mainClass.set("com.jasonernst.krcon.MainKt")
 }
 
+// Pin the published bytecode to Java 17, whatever JDK builds it: without this the target follows
+// the build JDK, and 0.1.0 (built on 25) was refused by consumers compiling for 17.
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        freeCompilerArgs.add("-Xjdk-release=17")
+    }
+}
+
 // In build.gradle.kts
 tasks.named<JavaExec>("run") {
     standardInput = System.`in`
