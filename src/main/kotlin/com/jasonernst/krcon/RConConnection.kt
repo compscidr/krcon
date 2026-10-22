@@ -24,8 +24,8 @@ import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * @param client what the connection dials through. Defaults to one client shared by every
- *  connection in the process: each Ktor CIO client pins an IO thread to its selector loop, so a
- *  client per connection cost a thread per connection (#142). [stop] never closes it — a caller
+ *  connection in the process: each Ktor CIO client pins an IO thread to its selector loop, so
+ *  giving each connection its own client pinned one thread per connection (#142). [stop] never closes it — a caller
  *  that passes its own client owns its lifecycle.
  */
 class RConConnection(
